@@ -69,12 +69,6 @@ export const constantRoutes = [
         meta: { title: 'Table', icon: 'table' }
       },
       {
-        path: 'books',
-        name: 'Books',
-        component: () => import('@/views/books/index'),
-        meta: { title: 'Books', icon: 'el-icon-notebook-1' }
-      },
-      {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
@@ -91,7 +85,20 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: 'Form', icon: 'el-icon-notebook-1' }
+      }
+    ]
+  },
+
+  {
+    path: '/books',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Books',
+        component: () => import('@/views/books/index'),
+        meta: { title: 'Books', icon: 'form' }
       }
     ]
   },

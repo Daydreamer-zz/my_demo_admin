@@ -7,3 +7,10 @@ export function getList(params) {
     params
   })
 }
+
+export function deleteBook(id) {
+  return request({
+    url: '/books/' + id + '/',
+    method: 'delete'
+  })
+}
