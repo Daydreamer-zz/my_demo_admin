@@ -40,16 +40,46 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible">
+      <el-form :model="bookForm" status-icon ref="bookForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="id" prop="id">
+          <el-input type="text" v-model="bookForm.id" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="书名" prop="name">
+          <el-input type="text" v-model="bookForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="作者" prop="author">
+          <el-input type="text" v-model="bookForm.author" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList, deleteBook } from '@/api/books'
+import { getBooklist, deleteBook, updateBook } from '@/api/books'
 
 export default {
+  data() {
+    return {
+      bookList: null,
+      listLoading: true,
+      dialogFormVisible: false,
+      bookForm: {
+        id: '',
+        name: '',
+        author: ''
+      }
+    }
+  },
   methods: {
     handleEdit(row) {
-      console.log(row)
+      this.dialogFormVisible = true
+      this.bookForm = row
     },
 
     handleDelete(row) {
@@ -72,23 +102,19 @@ export default {
         })
       })
     },
-
+    handleUpdate(book_id) {
+      updateBook(book_id, this.bookForm).then(response => {
+        this.fetchData()
+      })
+    },
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
+      getBooklist().then(response => {
         this.bookList = response.results
         this.listLoading = false
       })
     }
   },
-
-  data() {
-    return {
-      bookList: null,
-      listLoading: true
-    }
-  },
-
   created() {
     this.fetchData()
   }

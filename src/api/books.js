@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getList(params) {
+export function getBooklist(params) {
   return request({
     url: '/books',
     method: 'get',
@@ -12,5 +12,13 @@ export function deleteBook(id) {
   return request({
     url: '/books/' + id + '/',
     method: 'delete'
+  })
+}
+
+export function updateBook(book_id, data) {
+  return request({
+    url: '/books/' + book_id + '/',
+    method: 'patch',
+    data
   })
 }
