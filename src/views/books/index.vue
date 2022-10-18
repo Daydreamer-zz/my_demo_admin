@@ -23,6 +23,11 @@
           {{ scope.row.author }}
         </template>
       </el-table-column>
+      <el-table-column label="更新日期" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.updated_at }}
+        </template>
+      </el-table-column>
       <el-table-column label="创建日期" align="center">
         <template slot-scope="scope">
           {{ scope.row.created_at }}
@@ -32,7 +37,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.row)">编辑</el-button>
+            @click="dialogFormVisible = true;bookForm = scope.row">编辑</el-button>
           <el-button
             size="mini"
             type="danger"
@@ -54,7 +59,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleUpdate(bookForm.id)">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -77,11 +82,6 @@ export default {
     }
   },
   methods: {
-    handleEdit(row) {
-      this.dialogFormVisible = true
-      this.bookForm = row
-    },
-
     handleDelete(row) {
       this.$confirm('此操作将执行删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -103,6 +103,8 @@ export default {
       })
     },
     handleUpdate(book_id) {
+      this.dialogFormVisible = false
+      // console.log(book_id, this.bookForm)
       updateBook(book_id, this.bookForm).then(response => {
         this.fetchData()
       })
