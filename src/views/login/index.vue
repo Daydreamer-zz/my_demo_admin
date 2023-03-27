@@ -40,27 +40,45 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <el-button type="text" @click="dialogFormVisible = true">注册用户</el-button>
       </div>
-
     </el-form>
+
+    <el-dialog title="创建用户" :visible.sync="dialogFormVisible">
+      <el-form ref="ruleForm" :model="ruleForm" status-icon :rules="rules">
+        <el-form-item label="用户名" prop="username" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.username" type="text" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.email" type="text" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.password" type="password" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="checkpassword" :label-width="formLabelWidth">
+          <el-input v-model="ruleForm.checkpassword" type="password" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false; resetForm('ruleForm')"> 取消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false; handleCreateUser('ruleForm')">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+// import { validUsername } from '@/utils/validate'
+import { createUser } from '@/api/user'
 
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value.length === 0) {
+        callback(new Error('用户名不能为空'))
       } else {
         callback()
       }
@@ -72,6 +90,51 @@ export default {
         callback()
       }
     }
+
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value.length < 6) {
+        callback(new Error('密码不能小于6位'))
+      } else {
+        if (this.ruleForm.checkpassword !== '') {
+          this.$refs.ruleForm.validateField('checkpassword')
+        }
+        callback()
+      }
+    }
+
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.ruleForm.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+
+    var validateEmail = (rule, value, callback) => {
+      const reg = /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/
+      if (value.length === 0) {
+        callback(new Error('邮箱不能为空'))
+      } else if (value.length >= 30) {
+        callback(new Error('邮箱不能大于30个字符'))
+      } else if (reg.test(value) === false) {
+        callback(new Error('邮箱格式错误'))
+      } else {
+        callback()
+      }
+    }
+
+    var validateNewUsername = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback(new Error('用户名不能为空'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       loginForm: {
         username: 'admin',
@@ -83,7 +146,23 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+
+      ruleForm: {
+        username: '',
+        email: '',
+        password: '',
+        checkpassword: ''
+      },
+
+      rules: {
+        username: [{ validator: validateNewUsername, trigger: 'blur' }],
+        email: [{ validator: validateEmail, trigger: 'blur' }],
+        password: [{ validator: validatePass, trigger: 'blur' }],
+        checkpassword: [{ validator: validatePass2, trigger: 'blur' }]
+      },
+
+      dialogFormVisible: false
     }
   },
   watch: {
@@ -120,6 +199,24 @@ export default {
           return false
         }
       })
+    },
+    handleCreateUser(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          createUser(this.ruleForm).then(response => {
+            this.$message({
+              message: '用户创建成功，请去邮箱激活用户',
+              type: 'success'
+            })
+          })
+        } else {
+          this.$message.error('表单内容错误!!!')
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }

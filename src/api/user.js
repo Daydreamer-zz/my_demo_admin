@@ -21,3 +21,12 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function createUser(data) {
+  return request({
+    url: '/user_create/',
+    method: 'post',
+    data
+  })
+}
+
