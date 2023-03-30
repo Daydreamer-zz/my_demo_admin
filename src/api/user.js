@@ -30,3 +30,9 @@ export function createUser(data) {
   })
 }
 
+export function activateUser(code) {
+  return request({
+    url: '/user_activate/' + code,
+    method: 'get'
+  })
+}

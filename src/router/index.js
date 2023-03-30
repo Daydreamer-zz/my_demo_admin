@@ -44,6 +44,11 @@ export const constantRoutes = [
   },
 
   {
+    path: '/activate',
+    component: () => import('@/views/user/active.vue')
+  },
+
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
